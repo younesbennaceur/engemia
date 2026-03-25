@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  /* Couleurs de la charte EnigmIA */
+  --color-enigmia-dark: #2a2a28;
+  --color-enigmia-gold: #e1c199;
+  --color-enigmia-blue: #005aff;
+  --color-enigmia-orange: #ffa500;
+
+  /* Typographies */
+  --font-inter: "Inter", sans-serif;
+  --font-poppins: "Poppins", serif;
+}
+
+/* Base de la page */
+body {
+  background-color: var(--color-enigmia-dark);
+  color: white;
+  /* Optionnel : cacher le curseur système si votre curseur custom fonctionne */
+  cursor: none; 
+}
