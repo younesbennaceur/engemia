@@ -88,7 +88,7 @@ export default function HorizontalScrollSection() {
   }, []);
 
   return (
-    <section ref={triggerRef} className="overflow-hidden bg-enigmia-dark">
+    <section id='programme' ref={triggerRef} className="overflow-hidden bg-enigmia-dark">
       <div className="relative h-screen flex flex-col justify-center">
         
         {/* En-tête statique (Optionnel : si tu veux qu'il défile aussi, mets le dans sectionRef) */}
