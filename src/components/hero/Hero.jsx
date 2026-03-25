@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { Draggable } from 'gsap/Draggable';
 import { EVENT_DATE } from '../../data';
+import { Link } from 'react-router-dom';
 
 // Enregistrement du plugin Draggable pour GSAP
 gsap.registerPlugin(Draggable);
@@ -201,12 +202,13 @@ export default function SplitHero() {
 
         {/* Boutons d'Action */}
         <div ref={btnsRef} className="flex flex-col gap-4 sm:flex-row">
-          <a 
-            href="#inscription" 
+          <Link
+            to="/inscription"
+           
             className="group relative overflow-hidden bg-enigmia-gold px-10 py-4 font-inter text-sm font-bold uppercase tracking-widest text-enigmia-dark transition-all duration-300 hover:scale-105 hover:bg-white"
           >
             🚀 Je participe
-          </a>
+          </Link>
           <a 
             href="#concept" 
             className="px-10 py-4 font-inter text-sm font-bold uppercase tracking-widest text-enigmia-gold transition-all duration-300 hover:text-white"
