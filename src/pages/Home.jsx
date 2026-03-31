@@ -12,6 +12,7 @@ import Footer from '../components/sections/Footer';
 import PrizesSection from '../components/sections/PrizesSection';
 import ProfilesSection from '../components/sections/ProfilesSection';
 import ConceptSection from '../components/sections/ConceptSection';
+import ContactPage from '../components/sections/ContactPage';
 export default function Home() {
   return (
     <div className="bg-enigmia-dark min-h-screen text-white selection:bg-enigmia-gold selection:text-enigmia-dark">
@@ -25,6 +26,8 @@ export default function Home() {
         <ProfilesSection />
         <PrizesSection />
         <CtaSection />
+        <ContactPage />
+
         <Footer />
       
       </main>

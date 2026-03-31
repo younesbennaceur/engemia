@@ -9,6 +9,9 @@ export default function InscriptionPage() {
   const formRef = useRef(null);
   const successRef = useRef(null);
   const [fileName, setFileName] = useState('');
+  
+  // 🟢 NOUVEAU : État pour gérer le chargement pendant l'envoi
+  const [isLoading, setIsLoading] = useState(false);
 
   // Animation d'apparition au scroll
   useEffect(() => {
@@ -31,25 +34,47 @@ export default function InscriptionPage() {
     );
   }, []);
 
-  // Gestion de la soumission du formulaire
-  const handleSubmit = (e) => {
+  // 🟢 MIS À JOUR : Gestion de la soumission du formulaire vers le BACKEND
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // On désactive le bouton
     
-    // Animation de transition vers le message de succès
-    gsap.to(formRef.current, {
-      opacity: 0,
-      y: -20,
-      duration: 0.4,
-      onComplete: () => {
-        formRef.current.style.display = 'none';
-        successRef.current.style.display = 'block';
-        gsap.fromTo(
-          successRef.current,
-          { opacity: 0, scale: 0.9 },
-          { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.5)' }
-        );
-      },
-    });
+    // Récupération automatique de toutes les données du formulaire (y compris le fichier)
+    const formData = new FormData(e.target);
+
+    try {
+      // ⚠️ Envoi au backend (assure-toi que ton backend tourne sur le port 5000)
+      const response = await fetch('http://localhost:5000/api/candidatures', {
+        method: 'POST',
+        body: formData, // Pas besoin de Content-Type, le navigateur gère le multipart/form-data
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la transmission des données.');
+      }
+      
+      // Animation de transition vers le message de succès si tout est bon
+      gsap.to(formRef.current, {
+        opacity: 0,
+        y: -20,
+        duration: 0.4,
+        onComplete: () => {
+          formRef.current.style.display = 'none';
+          successRef.current.style.display = 'block';
+          gsap.fromTo(
+            successRef.current,
+            { opacity: 0, scale: 0.9 },
+            { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.5)' }
+          );
+        },
+      });
+
+    } catch (error) {
+      console.error(error);
+      alert("Une erreur est survenue lors de l'envoi de votre candidature. Veuillez réessayer.");
+    } finally {
+      setIsLoading(false); // On réactive le bouton si besoin
+    }
   };
 
   // Gestion du nom de fichier pour le CV
@@ -62,16 +87,13 @@ export default function InscriptionPage() {
   };
 
   return (
-    // J'ai ajouté overflow-hidden et min-h-screen pour que le fond s'adapte parfaitement
     <div ref={containerRef} id="inscription" className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-enigmia-dark px-6 py-24 md:px-[60px] md:py-[120px]">
       
       {/* ── ARRIÈRE-PLAN (Backgrounds) ── */}
-      {/* Halo central lumineux */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <div className="h-[50vw] w-[50vw] rounded-full bg-enigmia-gold/5 opacity-50 blur-[100px]" />
       </div>
       
-      {/* Grille technique en fond */}
       <div 
         className="pointer-events-none absolute inset-0 opacity-20"
         style={{
@@ -82,15 +104,12 @@ export default function InscriptionPage() {
         }}
       />
 
-      {/* Ligne décorative en haut de la page */}
       <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-enigmia-gold to-transparent opacity-50" />
 
 
       {/* ── CONTENEUR DU FORMULAIRE ── */}
-      {/* z-10 pour être au-dessus du fond, et ajout de backdrop-blur pour l'effet "verre" */}
       <div className="relative z-10 mx-auto w-full max-w-[800px] rounded-2xl border border-enigmia-gold/10 bg-[#1a1a18]/90 p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] backdrop-blur-md md:p-12">
         
-        {/* En-tête du formulaire avec le LOGO */}
         <div className="mb-10 flex flex-col items-center text-center">
           <img 
             src="/Logo.png" 
@@ -111,31 +130,36 @@ export default function InscriptionPage() {
         {/* Le Formulaire */}
         <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-6">
           
-          {/* LIGNE 1 : Nom & Prénom */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="flex flex-col gap-2">
               <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Nom *</label>
-              <input type="text" required placeholder="Turing" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
+              {/* 🟢 Ajout de name="nom" */}
+              <input type="text" name="nom" required placeholder="Turing" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
             </div>
             <div className="flex flex-col gap-2">
               <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Prénom *</label>
-              <input type="text" required placeholder="Alan" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
+              {/* 🟢 Ajout de name="prenom" */}
+              <input type="text" name="prenom" required placeholder="Alan" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Email *</label>
+              <input type="email" name="email" required placeholder="alan@enigma.com" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
             </div>
           </div>
 
-          {/* LIGNE 2 : Ville & Téléphone */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="flex flex-col gap-2">
               <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Ville *</label>
-              <input type="text" required placeholder="Alger, Oran..." className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
+              {/* 🟢 Ajout de name="ville" */}
+              <input type="text" name="ville" required placeholder="Alger, Oran..." className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
             </div>
             <div className="flex flex-col gap-2">
               <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Téléphone *</label>
-              <input type="tel" required placeholder="+213 0 00 00 00 00" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
+              {/* 🟢 Ajout de name="telephone" */}
+              <input type="tel" name="telephone" required placeholder="+213 0 00 00 00 00" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
             </div>
           </div>
 
-          {/* Déplacement */}
           <div className="flex flex-col gap-3 border-l-2 border-enigmia-gold/30 bg-enigmia-gold/5 p-5 backdrop-blur-sm">
             <label className="font-inter text-[0.75rem] font-bold uppercase tracking-wider text-enigmia-gold">
               Je peux me déplacer sur Alger du 3 au 8 mai *
@@ -152,10 +176,10 @@ export default function InscriptionPage() {
             </div>
           </div>
 
-          {/* Profil */}
           <div className="flex flex-col gap-2">
             <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Ton profil *</label>
-            <select required defaultValue="" className="w-full appearance-none rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none">
+            {/* 🟢 Ajout de name="profil" */}
+            <select name="profil" required defaultValue="" className="w-full appearance-none rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none">
               <option value="" disabled>Sélectionne ton profil principal...</option>
               {['Développeur', 'Data scientist', 'Désigner', 'Spécialiste IA', 'Architecte', 'Product manager', 'Autres'].map((p) => (
                 <option key={p} value={p} className="bg-enigmia-dark text-white">{p}</option>
@@ -163,25 +187,25 @@ export default function InscriptionPage() {
             </select>
           </div>
 
-          {/* Compétences techniques */}
           <div className="flex flex-col gap-2">
             <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Tes compétences techniques *</label>
-            <textarea required placeholder="Ex: Python, React, TensorFlow, Figma, Docker..." className="min-h-[100px] w-full resize-y rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
+            {/* 🟢 Ajout de name="competences" */}
+            <textarea name="competences" required placeholder="Ex: Python, React, TensorFlow, Figma, Docker..." className="min-h-[100px] w-full resize-y rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
           </div>
 
-          {/* Liens : GitHub & LinkedIn */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="flex flex-col gap-2">
               <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Lien GitHub</label>
-              <input type="url" placeholder="https://github.com/ton-profil" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
+              {/* 🟢 Ajout de name="github" */}
+              <input type="url" name="github" placeholder="https://github.com/ton-profil" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
             </div>
             <div className="flex flex-col gap-2">
               <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Profil LinkedIn *</label>
-              <input type="url" required placeholder="https://linkedin.com/in/ton-profil" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
+              {/* 🟢 Ajout de name="linkedin" */}
+              <input type="url" name="linkedin" required placeholder="https://linkedin.com/in/ton-profil" className="w-full rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none" />
             </div>
           </div>
 
-          {/* Pourquoi participer (Checkboxes) */}
           <div className="flex flex-col gap-3">
             <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">
               Pourquoi participer au Hackathon ? (Plusieurs choix possibles)
@@ -194,19 +218,21 @@ export default function InscriptionPage() {
                 "Je cherche une opportunité professionnelle ou de Freelance"
               ].map((raison, idx) => (
                 <label key={idx} className="flex cursor-pointer items-start gap-3 font-inter text-[0.85rem] text-gray-300 transition-colors hover:text-white">
-                  <input type="checkbox" className="mt-1 h-4 w-4 shrink-0 accent-enigmia-gold" value={raison} />
+                  {/* 🟢 Ajout de name="raisons[]" */}
+                  <input type="checkbox" name="raisons[]" className="mt-1 h-4 w-4 shrink-0 accent-enigmia-gold" value={raison} />
                   <span>{raison}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          {/* CV (Upload de fichier stylisé) */}
           <div className="flex flex-col gap-2">
             <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">CV (Optionnel)</label>
             <div className="relative flex items-center">
+              {/* 🟢 Ajout de name="cv" */}
               <input 
                 type="file" 
+                name="cv"
                 id="cv-upload" 
                 className="hidden" 
                 accept=".pdf,.doc,.docx"
@@ -225,12 +251,12 @@ export default function InscriptionPage() {
             </div>
           </div>
 
-          {/* Bouton de soumission */}
           <button 
             type="submit" 
-            className="mt-6 w-full bg-enigmia-gold py-4 font-poppins text-lg font-bold uppercase tracking-widest text-enigmia-dark transition-all duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-[0_0_20px_rgba(225,193,153,0.4)]"
+            disabled={isLoading}
+            className={`mt-6 w-full py-4 font-poppins text-lg font-bold uppercase tracking-widest transition-all duration-300 ${isLoading ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-enigmia-gold text-enigmia-dark hover:scale-[1.02] hover:bg-white hover:shadow-[0_0_20px_rgba(225,193,153,0.4)]'}`}
           >
-            Décoder mon avenir
+            {isLoading ? 'Transmission...' : 'Décoder mon avenir'}
           </button>
         </form>
 

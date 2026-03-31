@@ -58,18 +58,17 @@ export default function ConceptSection() {
 
       <div className="container mx-auto px-6 relative z-10">
         
-        {/* En-tête de section */}
-        <div className="concept-header max-w-3xl mb-20">
-          <p className="font-inter text-enigmia-gold text-[0.7rem] uppercase tracking-[0.4em] mb-4 flex items-center gap-3">
-            <span className="w-8 h-px bg-enigmia-gold"></span> Le Concept
-          </p>
-          <h2 className="font-poppins text-4xl md:text-6xl font-black text-white mb-8">
-            Transformer l'idée en <span className="text-enigmia-gold">réalité.</span>
-          </h2>
-          <p className="font-inter text-gray-400 text-lg leading-relaxed">
-            EnigmIA est un hackathon immersif où des équipes se réunissent pour relever un défi technologique en un temps limité. [cite: 10] L’objectif : transformer une idée en prototype fonctionnel grâce à l’intelligence collective. [cite: 12]
-          </p>
-        </div>
+       <div className="mb-6 w-full max-w-4xl text-left">
+  <h2 className="w-full font-poppins text-4xl md:text-6xl font-black text-white mb-4 leading-tight">
+    Transformez une idée en prototype fonctionnel en un temps limité.
+    <br className="hidden md:block" /> {/* Ligne cassée sur PC, adaptatif sur mobile */}
+    <span className="text-enigmia-gold block mt-2">Équipes, défis, IA.</span>
+  </h2>
+  
+  <p className="font-inter text-sm leading-relaxed text-gray-400 md:text-lg max-w-2xl">
+    EnigmIA est un hackathon immersif où des équipes se réunissent pour relever un défi technologique en un temps limité. L'objectif : transformer une idée en prototype fonctionnel grâce à l'intelligence collective.
+  </p>
+</div>
 
         {/* Grille des 4 Piliers */}
         <div className="pillars-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1 mb-24 bg-enigmia-gold/10 p-px">
