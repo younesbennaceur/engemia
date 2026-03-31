@@ -9,6 +9,17 @@ export default function InscriptionPage() {
   const formRef = useRef(null);
   const successRef = useRef(null);
   const [fileName, setFileName] = useState('');
+  const [selectedProfils, setSelectedProfils] = useState([]);
+
+  const toggleProfil = (profil) => {
+  if (selectedProfils.includes(profil)) {
+    // On l'enlève
+    setSelectedProfils(selectedProfils.filter(p => p !== profil));
+  } else {
+    // On l'ajoute
+    setSelectedProfils([...selectedProfils, profil]);
+  }
+};
   
   // 🟢 NOUVEAU : État pour gérer le chargement pendant l'envoi
   const [isLoading, setIsLoading] = useState(false);
@@ -176,16 +187,43 @@ export default function InscriptionPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Ton profil *</label>
-            {/* 🟢 Ajout de name="profil" */}
-            <select name="profil" required defaultValue="" className="w-full appearance-none rounded-none border border-enigmia-gold/20 bg-enigmia-dark/80 px-4 py-3.5 font-inter text-white transition-colors focus:border-enigmia-gold focus:outline-none">
-              <option value="" disabled>Sélectionne ton profil principal...</option>
-              {['Développeur', 'Data scientist', 'Désigner', 'Spécialiste IA', 'Architecte', 'Product manager', 'Autres'].map((p) => (
-                <option key={p} value={p} className="bg-enigmia-dark text-white">{p}</option>
-              ))}
-            </select>
-          </div>
+         {/* Profil - Choix multiple stylisé */}
+{/* Profil - Choix MULTIPLES stylisé */}
+<div className="flex flex-col gap-4">
+  <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">
+    Tes profils (Choisis-en un ou plusieurs) *
+  </label>
+  
+  {/* On joint le tableau avec des virgules pour le FormData */}
+  <input type="hidden" name="profil" value={selectedProfils.join(', ')} required={selectedProfils.length === 0} />
+
+  <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    {['Développeur', 'Data scientist', 'Designer', 'Spécialiste IA', 'Architecte', 'Product manager', 'Autres'].map((p) => {
+      const isSelected = selectedProfils.includes(p);
+      return (
+        <button
+          key={p}
+          type="button"
+          onClick={() => toggleProfil(p)}
+          className={`border px-4 py-3 font-inter text-[0.7rem] uppercase tracking-tighter transition-all duration-300 ${
+            isSelected
+              ? 'border-enigmia-gold bg-enigmia-gold text-enigmia-dark shadow-[0_0_15px_rgba(225,193,153,0.4)] font-bold'
+              : 'border-enigmia-gold/20 bg-enigmia-dark/50 text-gray-500 hover:border-enigmia-gold/50 hover:text-white'
+          }`}
+        >
+          {/* Petit indicateur visuel si sélectionné */}
+          {isSelected && <span className="mr-2">✓</span>}
+          {p}
+        </button>
+      );
+    })}
+  </div>
+  {selectedProfils.length > 0 && (
+    <p className="text-[0.6rem] text-enigmia-gold/60 italic">
+      {selectedProfils.length} profil(s) sélectionné(s)
+    </p>
+  )}
+</div>
 
           <div className="flex flex-col gap-2">
             <label className="font-inter text-[0.7rem] uppercase tracking-wider text-gray-400">Tes compétences techniques *</label>
